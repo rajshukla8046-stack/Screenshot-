@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload Payment Screenshot</title>
+<style>
+body{background:#111;color:#fff;text-align:center;font-family:Arial}
+.container{margin-top:50px}
+input,button{padding:10px;margin:10px;border:none;border-radius:5px}
+button{background:orange}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>📸 Upload Payment Screenshot</h2>
+
+<input type="text" id="mobile" placeholder="Enter Mobile Number"><br>
+<input type="file" id="file"><br>
+
+<button id="uploadBtn">Upload Screenshot</button>
+<p id="msg"></p>
+</div>
+
+<script>
+document.getElementById("uploadBtn").addEventListener("click", upload);
+
+async function upload(){
+  const file = document.getElementById("file").files[0];
+  const mobile = document.getElementById("mobile").value;
+
+  if(!file || !mobile){
+    alert("Fill all fields");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = async function(){
+
+    const data = {
+      mobile: mobile,
+      screenshot: reader.result
+    };
+
+    try{
+      const res = await fetch("https://script.google.com/macros/s/AKfycbx6QhD-FU3bB0dfKZbzFMElj6StJHP9vs9NpK00EmmWcSiZ9lh9FJbU9IctYzk1PC6Brg/exec", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
+
+      const text = await res.text();
+      document.getElementById("msg").innerText = "Server: " + text;
+
+    }catch(err){
+      document.getElementById("msg").innerText = "Error: " + err;
+    }
+
+  };
+
+  reader.readAsDataURL(file);
+}
+</script>
